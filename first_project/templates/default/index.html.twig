@@ -17,4 +17,13 @@
         <li>Your template at <code><a href="{{ '/var/www/sf_course/first_project/templates/default/index.html.twig'|file_link(0) }}">templates/default/index.html.twig</a></code></li>
     </ul>
 </div>
+
+<ul>
+
+{% for item in list %}
+    <li>{{item}}</li>
+{% endfor %}
+
+</ul>
+
 {% endblock %}
