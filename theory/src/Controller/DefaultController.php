@@ -3,12 +3,17 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Services\MailService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class DefaultController extends AbstractController
 {
+    public function __construct(MailService $mail)
+    {
+        $this->mail = $mail;
+    }
 
     /**
      * @Route("/add/{name}", name="add")
@@ -30,9 +35,14 @@ class DefaultController extends AbstractController
     {
         $users = $this->getDoctrine()->getRepository(User::class)->findAll();
 
+        foreach($users as $key => $user) {
+            $canSendData[$key] = $this->mail->canSend();
+        }
+
         return $this->render('default/index.html.twig', [
             'controller_name' => 'DefaultController',
             'users' => $users,
+            'can_send' => $canSendData,
         ]);
     }
 
