@@ -70,11 +70,34 @@ class DefaultController extends AbstractController
         return $this->redirectToRoute('target');
     }
 
-        /**
+    /**
      * @Route("/target", name="target")
      */
     public function targetCtl(): Response
     {
         return new Response("Hello form redirect!");
+    }
+
+    /**
+     * @Route("/adv_route/{param?}", name="adv_route", requirements={"param"="\d+"})
+     */
+    public function advRoute($param): Response
+    {
+        return new Response("Controller is reached and param is correct.");
+    }
+
+    /**
+     * @Route("/adv_route2/{param1}/{param2}/{param3}",
+     * name="adv_route2",
+     * defaults={"param3": 1},
+     * requirements={
+     *  "param1": "bar|baz",
+     *  "param2": "doot|doom",
+     *  "param3": "\d+",
+     * })
+     */
+    public function advRoute2($param1, $param2, $param3): Response
+    {
+        return new Response("Controller is reached and param is correct.");
     }
 }
