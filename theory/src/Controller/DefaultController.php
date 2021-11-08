@@ -25,6 +25,8 @@ class DefaultController extends AbstractController
         $this->getDoctrine()->getManager()->persist($user1);
         $this->getDoctrine()->getManager()->flush();
 
+        $this->addFlash('notice', 'User saved!');
+
          return $this->redirectToRoute('tpl');
     }
 
