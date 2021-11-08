@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Services\MailService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -101,5 +102,33 @@ class DefaultController extends AbstractController
     public function advRoute2($param1, $param2, $param3): Response
     {
         return new Response("Controller is reached and param is correct.");
+    }
+
+    /**
+     * @Route("/cookie/set", name="set_cookie")
+     */
+    public function setCookie(): Response
+    {
+        $cookie = new Cookie(
+            'cookie_name',
+            'coookie_value',
+            time() + (24 * 60 * 60),
+        );
+
+        $response = new Response();
+        $response->headers->setCookie($cookie);
+
+        return $response;
+    }
+
+    /**
+     * @Route("/cookie/clear", name="clear_cookie")
+     */
+    public function clearCookie(): Response
+    {
+        $response = new Response();
+        $response->headers->clearCookie('cookie_name');
+
+        return $response;
     }
 }
