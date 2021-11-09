@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Services\MailService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -162,5 +163,17 @@ class DefaultController extends AbstractController
         $session = $this->requestStack->getSession();
         $session->clear();
         exit();
+    }
+
+    /**
+     * @Route("/params", name="params")
+     */
+    public function params(Request $request)
+    {
+        $get = $request->query->get('d'); //http://localhost:8080/params?d="oot"
+        //$post = $request->request->get('d');
+        //$file = $request->files->get('d');
+
+        exit($get);
     }
 }
