@@ -176,4 +176,12 @@ class DefaultController extends AbstractController
 
         exit($get);
     }
+
+    /**
+     * @Route("/404", name="fourOfour")
+     */
+    public function fourOFour()
+    {
+        throw $this->createNotFoundException('Such a surprise! Exception 404! Something not found.');
+    }
 }
