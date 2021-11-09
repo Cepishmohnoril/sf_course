@@ -6,14 +6,16 @@ use App\Entity\User;
 use App\Services\MailService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class DefaultController extends AbstractController
 {
-    public function __construct(MailService $mail)
+    public function __construct(MailService $mail, RequestStack $requestStack)
     {
         $this->mail = $mail;
+        $this->requestStack = $requestStack;
     }
 
     /**
@@ -130,5 +132,35 @@ class DefaultController extends AbstractController
         $response->headers->clearCookie('cookie_name');
 
         return $response;
+    }
+
+    /**
+     * @Route("/session/set", name="set_session")
+     */
+    public function setSession()
+    {
+        $session = $this->requestStack->getSession();
+        $session->set('foo', 'bar');
+        exit();
+    }
+
+    /**
+     * @Route("/session/get", name="get_session")
+     */
+    public function getSession()
+    {
+        $session = $this->requestStack->getSession();
+        $value = $session->get('foo');
+        exit($value);
+    }
+
+        /**
+     * @Route("/session/clear", name="clear_session")
+     */
+    public function clearSession()
+    {
+        $session = $this->requestStack->getSession();
+        $session->clear();
+        exit();
     }
 }
