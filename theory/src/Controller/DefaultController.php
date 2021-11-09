@@ -22,7 +22,7 @@ class DefaultController extends AbstractController
     /**
      * @Route("/add/{name}", name="add")
      */
-    public function addUsersCtl(string $name): Response
+    public function addUsers(string $name): Response
     {
         $user1 = new User();
         $user1->setName($name);
@@ -37,7 +37,7 @@ class DefaultController extends AbstractController
     /**
      * @Route("/tpl", name="tpl")
      */
-    public function tplCtl(): Response
+    public function tpl(): Response
     {
         $users = $this->getDoctrine()->getRepository(User::class)->findAll();
 
@@ -55,7 +55,7 @@ class DefaultController extends AbstractController
     /**
      * @Route("/json", name="json")
      */
-    public function jsonCtl(): Response
+    public function _json(): Response
     {
         return $this->json(['hello' => 'world']);
     }
@@ -63,7 +63,7 @@ class DefaultController extends AbstractController
     /**
      * @Route("/param/{name}", name="param")
      */
-    public function paramCtl($name): Response
+    public function param($name): Response
     {
         return new Response("Hello $name");
     }
@@ -71,7 +71,7 @@ class DefaultController extends AbstractController
     /**
      * @Route("/redirect", name="redirect")
      */
-    public function redirectCtl(): Response
+    public function _redirect(): Response
     {
         return $this->redirectToRoute('target');
     }
