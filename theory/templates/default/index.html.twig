@@ -32,4 +32,20 @@
     </div>
 {% endfor %}
 
+
+{% set foo = '-5' %}
+
+<p>The abs of {{foo}} is {{foo|abs}}</p>
+
+<p>{{"And don't yell at me."|upper}}</p>
+
+{{ include('includes/monke.html.twig', { 'users': users }) }}
+
+{% endblock %}
+
+{% block javascript %}
+    {{ parent() }}
+    <script>
+        console.log('doot');
+    </script>
 {% endblock %}
