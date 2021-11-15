@@ -41,6 +41,13 @@
 
 {{ include('includes/monke.html.twig', { 'users': users }) }}
 
+{{ path('tpl') }} </br>
+{{ url('tpl') }} </br>
+{{ asset('image/logo.png') }} </br>
+{{ absolute_url(asset('image/logo.png')) }} </br>
+
+{{ "Escape \nthe \nMonke"|e }} </br>
+
 {% endblock %}
 
 {% block javascript %}
