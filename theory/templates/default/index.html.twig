@@ -50,6 +50,13 @@
 
 <p> The valuue of the global var `foo` is  {{ foo }} </p>
 
+<p> Current env value is {{ app.environment }} </p>
+
+{{ render(controller(
+    'App\\Controller\\DefaultController::getMonkeys',
+    { 'param': 5 }
+)) }}
+
 {% endblock %}
 
 {% block javascript %}

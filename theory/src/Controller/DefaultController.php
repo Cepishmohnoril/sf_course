@@ -221,4 +221,19 @@ class DefaultController extends AbstractController
     public function forwardToCotrolller($param): Response {
         return new Response('Forwarded with param: ' . $param);
     }
+
+    /**
+     * @Route("/gib_monke/{param?}", name="gib_monke")
+     */
+    public function getMonkeys($param = 3): Response {
+
+        $monkeys = ['monke 1', 'monke 2', 'monke 3', 'monke 4', 'monke 5', 'doot'];
+
+        return $this->render(
+            'default/monkeys.html.twig',
+            [
+                'monkeys' => $monkeys,
+            ]
+        );
+    }
 }
