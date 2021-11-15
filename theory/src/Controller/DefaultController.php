@@ -10,11 +10,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class DefaultController extends AbstractController
 {
-    public function __construct(MailService $mail, RequestStack $requestStack, $logger)
-    {
+    public function __construct(MailService $mail, RequestStack $requestStack, $logger) {
         $this->mail = $mail;
         $this->requestStack = $requestStack;
     }
@@ -22,8 +22,7 @@ class DefaultController extends AbstractController
     /**
      * @Route("/add/{name}", name="add")
      */
-    public function addUsers(string $name): Response
-    {
+    public function addUsers(string $name): Response {
         $user1 = new User();
         $user1->setName($name);
         $this->getDoctrine()->getManager()->persist($user1);
@@ -37,8 +36,7 @@ class DefaultController extends AbstractController
     /**
      * @Route("/tpl", name="tpl")
      */
-    public function tpl(): Response
-    {
+    public function tpl(): Response {
         $users = $this->getDoctrine()->getRepository(User::class)->findAll();
 
         foreach($users as $key => $user) {
@@ -55,40 +53,35 @@ class DefaultController extends AbstractController
     /**
      * @Route("/json", name="json")
      */
-    public function _json(): Response
-    {
+    public function _json(): Response {
         return $this->json(['hello' => 'world']);
     }
 
     /**
      * @Route("/param/{name}", name="param")
      */
-    public function param($name): Response
-    {
+    public function param($name): Response {
         return new Response("Hello $name");
     }
 
     /**
      * @Route("/redirect", name="redirect")
      */
-    public function _redirect(): Response
-    {
+    public function _redirect(): Response {
         return $this->redirectToRoute('target');
     }
 
     /**
      * @Route("/target", name="target")
      */
-    public function targetCtl(): Response
-    {
+    public function targetCtl(): Response {
         return new Response("Hello form redirect!");
     }
 
     /**
      * @Route("/adv_route/{param?}", name="adv_route", requirements={"param"="\d+"})
      */
-    public function advRoute($param): Response
-    {
+    public function advRoute($param): Response {
         return new Response("Controller is reached and param is correct.");
     }
 
@@ -102,16 +95,14 @@ class DefaultController extends AbstractController
      *  "param3": "\d+",
      * })
      */
-    public function advRoute2($param1, $param2, $param3): Response
-    {
+    public function advRoute2($param1, $param2, $param3): Response {
         return new Response("Controller is reached and param is correct.");
     }
 
     /**
      * @Route("/cookie/set", name="set_cookie")
      */
-    public function setCookie(): Response
-    {
+    public function setCookie(): Response {
         $cookie = new Cookie(
             'cookie_name',
             'coookie_value',
@@ -127,8 +118,7 @@ class DefaultController extends AbstractController
     /**
      * @Route("/cookie/clear", name="clear_cookie")
      */
-    public function clearCookie(): Response
-    {
+    public function clearCookie(): Response {
         $response = new Response();
         $response->headers->clearCookie('cookie_name');
 
@@ -138,8 +128,7 @@ class DefaultController extends AbstractController
     /**
      * @Route("/session/set", name="set_session")
      */
-    public function setSession()
-    {
+    public function setSession() {
         $session = $this->requestStack->getSession();
         $session->set('foo', 'bar');
         exit();
@@ -148,18 +137,16 @@ class DefaultController extends AbstractController
     /**
      * @Route("/session/get", name="get_session")
      */
-    public function getSession()
-    {
+    public function getSession() {
         $session = $this->requestStack->getSession();
         $value = $session->get('foo');
         exit($value);
     }
 
-        /**
+    /**
      * @Route("/session/clear", name="clear_session")
      */
-    public function clearSession()
-    {
+    public function clearSession() {
         $session = $this->requestStack->getSession();
         $session->clear();
         exit();
@@ -168,8 +155,7 @@ class DefaultController extends AbstractController
     /**
      * @Route("/params", name="params")
      */
-    public function params(Request $request)
-    {
+    public function params(Request $request) {
         $get = $request->query->get('d'); //http://localhost:8080/params?d="oot"
         //$post = $request->request->get('d');
         //$file = $request->files->get('d');
@@ -178,10 +164,30 @@ class DefaultController extends AbstractController
     }
 
     /**
-     * @Route("/404", name="fourOfour")
+     * @Route("/404", name="four_o_four")
      */
-    public function fourOFour()
-    {
+    public function fourOFour() {
         throw $this->createNotFoundException('Such a surprise! Exception 404! Something not found.');
     }
+
+    /**
+     * @Route("/get_url", name="get_url")
+     */
+    public function getUrl(): Response {
+        $url = $this->generateUrl(
+            'adv_route',
+            ['param' => 10],
+            UrlGeneratorInterface::ABSOLUTE_URL
+        );
+        return new Response($url);
+    }
+
+    /**
+     * @Route("/download", name="download")
+     */
+    public function download(): Response {
+        $path = $this->getParameter('download_directory');
+        return $this->file($path . 'PHP+7+Zend+Certification+Study+Guide.pdf');
+    }
+
 }
