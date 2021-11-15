@@ -33,9 +33,9 @@
 {% endfor %}
 
 
-{% set foo = '-5' %}
+{% set absTest = '-5' %}
 
-<p>The abs of {{foo}} is {{foo|abs}}</p>
+<p>The abs of {{absTest}} is {{absTest|abs}}</p>
 
 <p>{{"And don't yell at me."|upper}}</p>
 
@@ -47,6 +47,8 @@
 {{ absolute_url(asset('image/logo.png')) }} </br>
 
 {{ "Escape \nthe \nMonke"|e }} </br>
+
+<p> The valuue of the global var `foo` is  {{ foo }} </p>
 
 {% endblock %}
 
