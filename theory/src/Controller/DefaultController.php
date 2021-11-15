@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class DefaultController extends AbstractController
 {
-    public function __construct(MailService $mail, RequestStack $requestStack)
+    public function __construct(MailService $mail, RequestStack $requestStack, $logger)
     {
         $this->mail = $mail;
         $this->requestStack = $requestStack;
