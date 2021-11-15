@@ -190,4 +190,35 @@ class DefaultController extends AbstractController
         return $this->file($path . 'PHP+7+Zend+Certification+Study+Guide.pdf');
     }
 
+    /**
+     * @Route("/redirect_from", name="redirect_from")
+     */
+    public function redirectTestFrom(): Response {
+        return $this->redirectToRoute('redirect_to', ['param' => 10]);
+    }
+
+
+    /**
+     * @Route("/redirect_to/{param?}", name="redirect_to")
+     */
+    public function redirectTestTo($param): Response {
+        return new Response('Redirected with param: ' . $param);
+    }
+
+    /**
+     * @Route("/forward_from", name="forward_from")
+     */
+    public function forwardFromCotrolller(): Response {
+        return $this->forward(
+            'App\Controller\DefaultController::forwardToCotrolller',
+            ['param' => 42],
+        );
+    }
+
+     /**
+     * @Route("/forward_to/{param?}", name="forward_to")
+     */
+    public function forwardToCotrolller($param): Response {
+        return new Response('Forwarded with param: ' . $param);
+    }
 }
