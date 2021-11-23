@@ -34,10 +34,45 @@ class DefaultController extends AbstractController
     }
 
     /**
+     * @Route("/edit/{name}", name="edit")
+     */
+    public function editUsers(string $name): Response {
+        $repo = $this->getDoctrine()->getRepository(User::class);
+        $user = $repo->find(1);
+        $user->setName($name);
+        $this->getDoctrine()->getManager()->flush();
+
+        $this->addFlash('notice', 'User saved!');
+
+         return $this->redirectToRoute('tpl');
+    }
+
+    /**
+     * @Route("/delete/{id}", name="delete")
+     */
+    public function deleteUsers(int $id): Response {
+        $repo = $this->getDoctrine()->getRepository(User::class);
+        $user = $repo->find($id);
+        $this->getDoctrine()->getManager()->remove($user);
+        $this->getDoctrine()->getManager()->flush();
+
+        $this->addFlash('notice', 'User saved!');
+
+         return $this->redirectToRoute('tpl');
+    }
+
+    /**
      * @Route("/tpl", name="tpl")
      */
     public function tpl(): Response {
-        $users = $this->getDoctrine()->getRepository(User::class)->findAll();
+        $repo = $this->getDoctrine()->getRepository(User::class);
+
+        $users = $repo->findAll();
+
+        //$user = $repo->find(1);
+        //$user = $repo->findOneBy(['name' => 'Doot-1']);
+        //$user = $repo->findBy(['name' => 'Doot-1']);
+        //dump($user);
 
         foreach($users as $key => $user) {
             $canSendData[$key] = $this->mail->canSend();
