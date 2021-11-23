@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\Video;
 use App\Services\MailService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Cookie;
@@ -23,10 +24,20 @@ class DefaultController extends AbstractController
      * @Route("/add/{name}", name="add")
      */
     public function addUsers(string $name): Response {
-        $user1 = new User();
-        $user1->setName($name);
-        $this->getDoctrine()->getManager()->persist($user1);
-        $this->getDoctrine()->getManager()->flush();
+        $em = $this->getDoctrine()->getManager();
+
+        $user = new User();
+        $user->setName($name);
+
+        for ($i=1; $i <= 3; $i++) {
+            $video = new Video();
+            $video->setTitle('Video-' . $i);
+            $user->addVideo($video);
+            $em->persist($video);
+        }
+
+        $em->persist($user);
+        $em->flush();
 
         $this->addFlash('notice', 'User saved!');
 
