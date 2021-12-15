@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Entity\Video;
 use App\Services\MailService;
+use App\Services\MyService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
@@ -75,7 +76,7 @@ class DefaultController extends AbstractController
     /**
      * @Route("/tpl", name="tpl")
      */
-    public function tpl(): Response {
+    public function tpl(MyService $myService): Response {
         $repo = $this->getDoctrine()->getRepository(User::class);
 
         $users = $repo->findAll();

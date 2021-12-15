@@ -5,6 +5,7 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     download_directory: '../public/'
+    global_param_test: 'fooBar'
 
 services:
     # default configuration for services in *this* file
@@ -28,3 +29,9 @@ services:
     App\Controller\DefaultController:
         bind:
             $logger: '@monolog.logger.doctrine'
+
+    App\Services\MyService:
+        arguments:
+            $param: 'Hello param!'
+            $globalParam: '%global_param_test%'
+            #$serviceParam: '@App\Services\MySecondService'
