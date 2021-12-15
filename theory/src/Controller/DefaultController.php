@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 class DefaultController extends AbstractController
 {
@@ -281,6 +282,30 @@ class DefaultController extends AbstractController
             [
                 'monkeys' => $monkeys,
             ]
+        );
+    }
+
+    /**
+     * @Route("/cache", name="cache")
+     */
+    public function cache(): Response {
+        $cache = new FilesystemAdapter();
+        $posts = $cache->getItem('database.get_posts');
+
+        if (!$posts->isHit()) {
+            $posts_from_db = ['post 1', 'post 2', 'post 3'];
+
+            dump('DB is reached for data.');
+
+            $posts->set(serialize($posts_from_db));
+            $posts->expiresAfter(5);
+            $cache->save($posts);
+        }
+
+        dump(unserialize($posts->get()));
+
+        return $this->render(
+            'default/cache.html.twig'
         );
     }
 }

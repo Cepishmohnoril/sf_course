@@ -1,7 +1,11 @@
-<b>The list of Monke!</b>
+{% extends 'base.html.twig' %}
 
-<ul>
-    {% for monke in monkeys%}
-        <li>{{ monke }}</li>
-    {% endfor %}
-</ul>
+{% block body %}
+    <b>The list of Monke!</b>
+
+    <ul>
+        {% for monke in monkeys%}
+            <li>{{ monke }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
