@@ -36,6 +36,10 @@ services:
             $globalParam: '%global_param_test%'
             #$serviceParam: '@App\Services\MySecondService'
 
-    #App\Services\KernelResponseListener:
+    #App\Listeners\KernelResponseListener:
     #    tags:
     #        - { name: kernel.event_listener, event: kernel.response }
+
+    App\Listeners\VideoCreatedListener:
+        tags:
+            - { name: kernel.event_listener, event: video.created.event }

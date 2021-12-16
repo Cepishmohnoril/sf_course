@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Entity\Video;
+use App\Events\VideoCreatedEvent;
 use App\Services\MailService;
 use App\Services\MyService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -14,12 +15,14 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class DefaultController extends AbstractController
 {
-    public function __construct(MailService $mail, RequestStack $requestStack, $logger) {
+    public function __construct(MailService $mail, RequestStack $requestStack, EventDispatcherInterface $dispatcher, $logger) {
         $this->mail = $mail;
         $this->requestStack = $requestStack;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
@@ -305,7 +308,24 @@ class DefaultController extends AbstractController
         dump(unserialize($posts->get()));
 
         return $this->render(
-            'default/cache.html.twig'
+            'default/default.html.twig'
+        );
+    }
+
+    /**
+     * @Route("/create_video", name="create_video")
+     */
+    public function createVideo(): Response {
+
+        $video = new \stdClass();
+        $video->title = 'Doot';
+        $video->duration = '1h';
+
+        $event = new VideoCreatedEvent($video);
+        $this->dispatcher->dispatch($event, 'video.created.event');
+
+        return $this->render(
+            'default/default.html.twig'
         );
     }
 }

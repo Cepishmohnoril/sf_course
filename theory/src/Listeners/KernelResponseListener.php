@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Listeners;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
