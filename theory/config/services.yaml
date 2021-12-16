@@ -35,3 +35,7 @@ services:
             $param: 'Hello param!'
             $globalParam: '%global_param_test%'
             #$serviceParam: '@App\Services\MySecondService'
+
+    #App\Services\KernelResponseListener:
+    #    tags:
+    #        - { name: kernel.event_listener, event: kernel.response }
