@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\SecurityUser;
 use App\Entity\User;
 use App\Entity\Video;
 use App\Events\VideoCreatedEvent;
+use App\Form\RegisterUserType;
 use App\Form\VideoFormType;
 use App\Services\MailService;
 use App\Services\MyService;
@@ -17,6 +19,11 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasher;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoder;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class DefaultController extends AbstractController
 {
@@ -354,6 +361,51 @@ class DefaultController extends AbstractController
             'default/formVideo.html.twig',
             [
                 'form' => $form->createView(),
+            ]
+        );
+    }
+
+    /**
+     * @Route("/register", name="register")
+     */
+    public function register(Request $request, UserPasswordHasherInterface $passwordHasher): Response {
+
+        $user = new SecurityUser();
+        $form = $this->createForm(RegisterUserType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+
+            $user->setPassword($passwordHasher->hashPassword($user, $form->get('password')->getData()));
+            $user->setEmail($form->get('email')->getData());
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($user);
+            $em->flush();
+            $this->redirectToRoute('tpl');
+        }
+
+        return $this->render(
+            'default/register.html.twig',
+            [
+                'form' => $form->createView(),
+            ]
+        );
+    }
+
+    /**
+     * @Route("/login", name="login")
+     */
+    public function login(AuthenticationUtils $authUtils): Response {
+
+        $error = $authUtils->getLastAuthenticationError();
+        $lastEmail = $authUtils->getLastUsername();
+
+        return $this->render(
+            'default/login.html.twig',
+            [
+                'last_email' => $lastEmail,
+                'error' => $error,
             ]
         );
     }
