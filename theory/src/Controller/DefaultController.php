@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Entity\Video;
 use App\Events\VideoCreatedEvent;
+use App\Form\VideoFormType;
 use App\Services\MailService;
 use App\Services\MyService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -326,6 +327,34 @@ class DefaultController extends AbstractController
 
         return $this->render(
             'default/default.html.twig'
+        );
+    }
+
+    /**
+     * @Route("/form_video", name="form_video")
+     */
+    public function formVideo(Request $request): Response {
+
+        $video = new Video();
+        $video->setTitle('Hello World!');
+        $video->setCreatedAt(new \DateTime('now'));
+
+        $form = $this->createForm(VideoFormType::class, $video);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            //dump($form->getData());
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($video);
+            $em->flush();
+            $this->redirectToRoute('tpl');
+        }
+
+        return $this->render(
+            'default/formVideo.html.twig',
+            [
+                'form' => $form->createView(),
+            ]
         );
     }
 }
