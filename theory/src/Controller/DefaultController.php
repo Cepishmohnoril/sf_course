@@ -131,6 +131,15 @@ class DefaultController extends AbstractController
     }
 
     /**
+     * @Route("/link", name="redirect")
+     */
+    public function link(): Response {
+        return $this->render(
+            'default/link.html.twig'
+        );
+    }
+
+    /**
      * @Route("/target", name="target")
      */
     public function targetCtl(): Response {
