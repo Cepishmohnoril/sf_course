@@ -26,9 +26,9 @@ class CategoryTreeFrontPage extends CategoryTreeAbstract
 
         foreach($categories as $value) {
             $catName = $this->slugger->slugify($value['name']);
-            $url = $this->urlGen->generate('video_list', ['categoryName' => $catName, 'id' => $value['id']]);
+            $url = $this->urlgenerator->generate('video_list', ['categoryName' => $catName, 'id' => $value['id']]);
 
-            $this->categoryList .= "<li><a href=\"$url\">$catName</a>";
+            $this->categoryList .= "<li><a href=\"$url\">" . $value['name'] . "</a>";
 
             if (!empty($value['children'])) {
                 $this->getCategoryList($value['children']);

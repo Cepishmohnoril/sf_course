@@ -15,7 +15,7 @@ abstract class CategoryTreeAbstract
     /**
      * @var UrlGeneratorInterface
      */
-    protected $urlGen;
+    protected $urlgenerator;
 
     /**
      * @var Array
@@ -32,10 +32,10 @@ abstract class CategoryTreeAbstract
      */
     public $categoryList;
 
-    public function __construct(EntityManagerInterface $em, UrlGeneratorInterface $urlGen)
+    public function __construct(EntityManagerInterface $em, UrlGeneratorInterface $urlgenerator)
     {
         $this->em = $em;
-        $this->urlGen = $urlGen;
+        $this->urlgenerator = $urlgenerator;
         $this->categories = $this->getCategories();
     }
 

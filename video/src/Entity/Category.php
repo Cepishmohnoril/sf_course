@@ -2,47 +2,47 @@
 
 namespace App\Entity;
 
-use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=CategoryRepository::class)
+ * @ORM\Entity(repositoryClass="App\Repository\CategoryRepository")
  * @ORM\Table(name="categories")
  */
 class Category
 {
     /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
+     * @ORM\Id()
+     * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=45, unique=true)
+     * @ORM\Column(type="string", length=45, unique = true)
      */
     private $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="subcategory")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Category", inversedBy="subcategories")
+     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id", onDelete="CASCADE")
      */
     private $parent;
 
     /**
-     * @ORM\OneToMany(targetEntity=Category::class, mappedBy="parent")
+     * @ORM\OneToMany(targetEntity="App\Entity\Category", mappedBy="parent")
      */
-    private $subcategory;
+    private $subcategories;
 
     /**
-     * @ORM\OneToMany(targetEntity=Video::class, mappedBy="category")
+     * @ORM\OneToMany(targetEntity="App\Entity\Video", mappedBy="category")
      */
     private $videos;
 
     public function __construct()
     {
-        $this->subcategory = new ArrayCollection();
+        $this->subcategories = new ArrayCollection();
         $this->videos = new ArrayCollection();
     }
 
@@ -78,15 +78,15 @@ class Category
     /**
      * @return Collection|self[]
      */
-    public function getSubcategory(): Collection
+    public function getSubcategories(): Collection
     {
-        return $this->subcategory;
+        return $this->subcategories;
     }
 
     public function addSubcategory(self $subcategory): self
     {
-        if (!$this->subcategory->contains($subcategory)) {
-            $this->subcategory[] = $subcategory;
+        if (!$this->subcategories->contains($subcategory)) {
+            $this->subcategories[] = $subcategory;
             $subcategory->setParent($this);
         }
 
@@ -95,7 +95,8 @@ class Category
 
     public function removeSubcategory(self $subcategory): self
     {
-        if ($this->subcategory->removeElement($subcategory)) {
+        if ($this->subcategories->contains($subcategory)) {
+            $this->subcategories->removeElement($subcategory);
             // set the owning side to null (unless already changed)
             if ($subcategory->getParent() === $this) {
                 $subcategory->setParent(null);
@@ -125,7 +126,8 @@ class Category
 
     public function removeVideo(Video $video): self
     {
-        if ($this->videos->removeElement($video)) {
+        if ($this->videos->contains($video)) {
+            $this->videos->removeElement($video);
             // set the owning side to null (unless already changed)
             if ($video->getCategory() === $this) {
                 $video->setCategory(null);
