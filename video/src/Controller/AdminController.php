@@ -6,8 +6,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Utils\CategoryTreeAdminList;
 use App\Entity\Category;
+use App\Form\CategoryType;
 use App\Utils\CategoryTreeAdminOptionList;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @Route("/admin")
@@ -24,23 +26,37 @@ class AdminController extends AbstractController
 
 
     /**
-     * @Route("/categories", name="categories")
+     * @Route("/categories", name="categories", methods={"GET", "POST"})
      */
-    public function categories(CategoryTreeAdminList $categories)
+    public function categories(CategoryTreeAdminList $categories, Request $reuqest)
     {
         $categories->getCategoryList($categories->buildTree());
+        $category = new Category();
+        $form = $this->createForm(CategoryType::class, $category);
+        $form->handleRequest($reuqest);
+        $isInvalid = false;
+
+        if($form->isSubmitted() && $form->isValid()) {
+
+        } elseif($reuqest->isMethod('POST')) {
+            $isInvalid = true;
+        }
 
         return $this->render('admin/categories.html.twig',[
-            'categories'=>$categories->categoryList
+            'categories' => $categories->categoryList,
+            'form' => $form->createView(),
+            'is_invalid' => $isInvalid,
         ]);
     }
 
     /**
-     * @Route("/edit-category", name="edit_category")
+     * @Route("/edit-category/{id}", name="edit_category")
      */
-    public function editCategory()
+    public function editCategory(Category $category)
     {
-        return $this->render('admin/edit_category.html.twig');
+        return $this->render('admin/edit_category.html.twig', [
+            'category' => $category,
+        ]);
     }
 
     /**
@@ -78,11 +94,12 @@ class AdminController extends AbstractController
         return $this->render('admin/users.html.twig');
     }
 
-    public function getAllCategories(CategoryTreeAdminOptionList $categories)
+    public function getAllCategories(CategoryTreeAdminOptionList $categories, $editedCategory = null)
     {
         $categories->getCategoryList($categories->buildTree());
         return $this->render('admin/_all_categories.html.twig',[
-            'categories'=>$categories
+            'categories' => $categories,
+            'editedCategory' => $editedCategory,
         ]);
     }
 }
