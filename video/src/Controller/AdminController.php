@@ -28,7 +28,7 @@ class AdminController extends AbstractController
     /**
      * @Route("/categories", name="categories", methods={"GET", "POST"})
      */
-    public function categories(CategoryTreeAdminList $categories, Request $reuqest)
+    public function categories(CategoryTreeAdminList $categories, Request $reuqest, ManagerRegistry $registry)
     {
         $categories->getCategoryList($categories->buildTree());
         $category = new Category();
@@ -37,7 +37,14 @@ class AdminController extends AbstractController
         $isInvalid = false;
 
         if($form->isSubmitted() && $form->isValid()) {
+            $repository = $registry->getRepository(Category::class);
+            $parent = $repository->find($reuqest->request->get('category')['parent']);
+            $category->setName($reuqest->request->get('category')['name']);
+            $category->setParent($parent);
+            $registry->getManager()->persist($category);
+            $registry->getmanager()->flush();
 
+            return $this->redirectToRoute('categories');
         } elseif($reuqest->isMethod('POST')) {
             $isInvalid = true;
         }
@@ -62,9 +69,9 @@ class AdminController extends AbstractController
     /**
      * @Route("/delete-category/{id}", name="delete_category")
      */
-    public function deleteCategory(Category $category, ManagerRegistry $doctrine)
+    public function deleteCategory(Category $category, ManagerRegistry $registry)
     {
-        $entityManager = $doctrine->getManager();
+        $entityManager = $registry->getManager();
         $entityManager->remove($category);
         $entityManager->flush();
         return $this->redirectToRoute('categories');
