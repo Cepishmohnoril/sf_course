@@ -28,24 +28,17 @@ class AdminController extends AbstractController
     /**
      * @Route("/categories", name="categories", methods={"GET", "POST"})
      */
-    public function categories(CategoryTreeAdminList $categories, Request $reuqest, ManagerRegistry $registry)
+    public function categories(CategoryTreeAdminList $categories, Request $request, ManagerRegistry $registry)
     {
         $categories->getCategoryList($categories->buildTree());
         $category = new Category();
         $form = $this->createForm(CategoryType::class, $category);
-        $form->handleRequest($reuqest);
+        $form->handleRequest($request);
         $isInvalid = false;
 
-        if($form->isSubmitted() && $form->isValid()) {
-            $repository = $registry->getRepository(Category::class);
-            $parent = $repository->find($reuqest->request->get('category')['parent']);
-            $category->setName($reuqest->request->get('category')['name']);
-            $category->setParent($parent);
-            $registry->getManager()->persist($category);
-            $registry->getmanager()->flush();
-
+        if($this->saveCategory($category, $form, $request, $registry)) {
             return $this->redirectToRoute('categories');
-        } elseif($reuqest->isMethod('POST')) {
+        } elseif($request->isMethod('POST')) {
             $isInvalid = true;
         }
 
@@ -57,13 +50,43 @@ class AdminController extends AbstractController
     }
 
     /**
-     * @Route("/edit-category/{id}", name="edit_category")
+     * @Route("/edit-category/{id}", name="edit_category", methods={"GET", "POST"})
      */
-    public function editCategory(Category $category)
+    public function editCategory(Category $category, Request $request, ManagerRegistry $registry)
     {
+        $form = $this->createForm(CategoryType::class, $category);
+        $form->handleRequest($request);
+        $isInvalid = false;
+
+        if($this->saveCategory($category, $form, $request, $registry)) {
+            return $this->redirectToRoute('categories');
+        } elseif($request->isMethod('POST')) {
+            $isInvalid = true;
+        }
+
         return $this->render('admin/edit_category.html.twig', [
             'category' => $category,
+            'form' => $form->createView(),
+            'is_invalid' => $isInvalid,
         ]);
+    }
+
+    private function saveCategory($category, $form, $reuqest, $registry): bool
+    {
+        $isInvalid = false;
+
+        if($form->isSubmitted() && $form->isValid()) {
+            $repository = $registry->getRepository(Category::class);
+            $parent = $repository->find($reuqest->request->get('category')['parent']);
+            $category->setName($reuqest->request->get('category')['name']);
+            $category->setParent($parent);
+            $registry->getManager()->persist($category);
+            $registry->getmanager()->flush();
+
+            return true;
+        }
+
+        return false;
     }
 
     /**
