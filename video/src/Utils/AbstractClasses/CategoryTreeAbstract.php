@@ -15,7 +15,7 @@ abstract class CategoryTreeAbstract
     /**
      * @var UrlGeneratorInterface
      */
-    protected $urlgenerator;
+    public $urlgenerator;
 
     /**
      * @var Array
