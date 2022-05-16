@@ -47,16 +47,16 @@ class CategoryTest extends KernelTestCase
             ->setMethods()
             ->getMock();
 
-            $this->mockCategoryTreeFrontPage->urlgenerator = $kernel->getContainer()->get('router');
+            $this->$name->urlgenerator = $kernel->getContainer()->get('router');
         }
     }
 
     /**
      * @dataProvider dataForCategoryTreeFrontPage
      */
-    public function testCategoryTreeFrontPage(string $categoriesString, array $categoriesDbArray, int $categoryId): void
+    public function testCategoryTreeFrontPage(string $categoriesString, array $arrayFromDb, int $categoryId): void
     {
-        $this->mockCategoryTreeFrontPage->categories = $categoriesDbArray;
+        $this->mockCategoryTreeFrontPage->categories = $arrayFromDb;
         $this->mockCategoryTreeFrontPage->slugger = new AppExtension();
         $mainParentId = $this->mockCategoryTreeFrontPage->getMainParent($categoryId)['id'];
         $categoriesTree = $this->mockCategoryTreeFrontPage->buildTree($mainParentId);
@@ -67,17 +67,23 @@ class CategoryTest extends KernelTestCase
     /**
      * @dataProvider dataForCategoryTreeAdminList
      */
-    public function testCategoryTreeAdminList(): void
+    public function testCategoryTreeAdminList(string $compare, array $arrayFromDb): void
     {
+        $this->mockCategoryTreeAdminList->categories = $arrayFromDb;
+        $categoriesTree = $this->mockCategoryTreeAdminList->buildTree();
 
+        $this->assertSame($compare, $this->mockCategoryTreeAdminList->getCategoryList($categoriesTree));
     }
 
     /**
      * @dataProvider dataForCategoryTreeAdminOptionList
      */
-    public function testCategoryTreeAdminOptionList(array $arrayTocompare, array $arrayFromDb): void
+    public function testCategoryTreeAdminOptionList(array $arrayToCompare, array $arrayFromDb): void
     {
+        $this->mockCategoryTreeAdminOptionList->categories = $arrayFromDb;
+        $categoriesTree = $this->mockCategoryTreeAdminOptionList->buildTree();
 
+        $this->assertSame($arrayToCompare, $this->mockCategoryTreeAdminOptionList->getCategoryList($categoriesTree));
     }
 
     public function dataForCategoryTreeFrontPage(): Generator
@@ -130,12 +136,47 @@ class CategoryTest extends KernelTestCase
 
     public function dataForCategoryTreeAdminList(): Generator
     {
+        yield [
+            '<ul class="fa-ul text-left"><li><i class="fa-li fa fa-arrow-right"></i>  Toys<a href="/admin/edit-category/2"> Edit</a> <a onclick="return confirm(\'Are you sure?\');" href="/admin/delete-category/2">Delete</a></li></ul>',
+            [ ['id'=>2,'parent_id'=>null,'name'=>'Toys'] ]
+         ];
 
+         yield [
+            '<ul class="fa-ul text-left"><li><i class="fa-li fa fa-arrow-right"></i>  Toys<a href="/admin/edit-category/2"> Edit</a> <a onclick="return confirm(\'Are you sure?\');" href="/admin/delete-category/2">Delete</a></li><li><i class="fa-li fa fa-arrow-right"></i>  Movies<a href="/admin/edit-category/3"> Edit</a> <a onclick="return confirm(\'Are you sure?\');" href="/admin/delete-category/3">Delete</a></li></ul>',
+            [
+                ['id'=>2,'parent_id'=>null,'name'=>'Toys'],
+                ['id'=>3,'parent_id'=>null,'name'=>'Movies']
+            ]
+         ];
+
+         yield [
+            '<ul class="fa-ul text-left"><li><i class="fa-li fa fa-arrow-right"></i>  Toys<a href="/admin/edit-category/2"> Edit</a> <a onclick="return confirm(\'Are you sure?\');" href="/admin/delete-category/2">Delete</a></li><li><i class="fa-li fa fa-arrow-right"></i>  Movies<a href="/admin/edit-category/3"> Edit</a> <a onclick="return confirm(\'Are you sure?\');" href="/admin/delete-category/3">Delete</a><ul class="fa-ul text-left"><li><i class="fa-li fa fa-arrow-right"></i>  Horrors<a href="/admin/edit-category/4"> Edit</a> <a onclick="return confirm(\'Are you sure?\');" href="/admin/delete-category/4">Delete</a><ul class="fa-ul text-left"><li><i class="fa-li fa fa-arrow-right"></i>  Not so scary<a href="/admin/edit-category/5"> Edit</a> <a onclick="return confirm(\'Are you sure?\');" href="/admin/delete-category/5">Delete</a></li></ul></li></ul></li></ul>',
+
+            [
+                ['id'=>2,'parent_id'=>null,'name'=>'Toys'],
+                ['id'=>3,'parent_id'=>null,'name'=>'Movies'],
+                ['id'=>4,'parent_id'=>3,'name'=>'Horrors'],
+                ['id'=>5,'parent_id'=>4,'name'=>'Not so scary']
+            ]
+         ];
     }
 
     public function dataForCategoryTreeAdminOptionList(): Generator
     {
-
+        yield [
+            [
+                ['name'=>'Electronics','id'=>1],
+                ['name'=>'--Computers','id'=>6],
+                ['name'=>'----Laptops','id'=>8],
+                ['name'=>'------HP','id'=>14]
+            ],
+            [
+                ['name'=>'Electronics','id'=>1, 'parent_id'=>null],
+                ['name'=>'Computers','id'=>6, 'parent_id'=>1],
+                ['name'=>'Laptops','id'=>8, 'parent_id'=>6],
+                ['name'=>'HP','id'=>14, 'parent_id'=>8]
+            ]
+        ];
     }
 
 }
