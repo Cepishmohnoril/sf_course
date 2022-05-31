@@ -77,8 +77,8 @@ class AdminController extends AbstractController
 
         if($form->isSubmitted() && $form->isValid()) {
             $repository = $registry->getRepository(Category::class);
-            $parent = $repository->find($reuqest->request->get('category')['parent']);
-            $category->setName($reuqest->request->get('category')['name']);
+            $parent = $repository->find($reuqest->request->all('category')['parent']);
+            $category->setName($reuqest->request->all('category')['name']);
             $category->setParent($parent);
             $registry->getManager()->persist($category);
             $registry->getmanager()->flush();
