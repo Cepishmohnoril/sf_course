@@ -37,7 +37,7 @@ class AdminControllerCategoriesTest extends WebTestCase
     public function testNumberOfItems()
     {
         $crawler = $this->client->request('GET', '/admin/categories');
-        $this->assertCount(24, $crawler->filter('option'));
+        $this->assertCount(21, $crawler->filter('option'));
     }
 
     public function testNewCategory()
@@ -45,7 +45,7 @@ class AdminControllerCategoriesTest extends WebTestCase
         $crawler = $this->client->request('GET', '/admin/categories');
 
         $form = $crawler->selectButton('Add')->form([
-            'category[parent]' => 1,
+            'category[parent]' => 0,
             'category[name]' => 'Other electronics',
         ]);
         $this->client->submit($form);
