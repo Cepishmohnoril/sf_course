@@ -81,7 +81,7 @@ class AdminController extends AbstractController
             $category->setName($reuqest->request->all('category')['name']);
             $category->setParent($parent);
             $registry->getManager()->persist($category);
-            $registry->getmanager()->flush();
+            $registry->getManager()->flush();
 
             return true;
         }
