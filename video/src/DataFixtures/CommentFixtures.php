@@ -24,7 +24,7 @@ class CommentFixtures extends Fixture implements DependentFixtureInterface
             $comment->setContent($content);
             $comment->setUser($user);
             $comment->setVideo($video);
-            $comment->setCreatedAtForFixtures(new \DateTime($created_at));
+            $comment->setCreatedAtForFixtures(new \DateTimeImmutable($created_at));
 
             $manager->persist($comment);
         }
