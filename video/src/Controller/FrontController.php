@@ -3,9 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Category;
+use App\Entity\Comment;
 use App\Entity\User;
 use App\Entity\Video;
 use App\Form\UserType;
+use App\Repository\VideoRepository;
 use App\Utils\CategoryTreeFrontPage;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -69,11 +71,14 @@ class FrontController extends AbstractController
     }
 
     /**
-     * @Route("/video-details", name="video_details")
+     * @Route("/video-details/{video}", name="video_details")
      */
-    public function videoDetails(): Response
+    public function videoDetails(VideoRepository $repo, $video)
     {
-        return $this->render('front/video_details.html.twig');
+        return $this->render('front/video_details.html.twig',
+        [
+            'video'=>$repo->videoDetails($video),
+        ]);
     }
 
     /**
@@ -158,4 +163,26 @@ class FrontController extends AbstractController
         $this->get('security.token_storage')->setToken($token);
         $this->get('session')->set('_security_main',serialize($token));
     }
+
+    /**
+     * @Route("/new-comment/{video}", methods={"POST"}, name="new_comment")
+    */
+    public function newComment(Video $video, Request $request, ManagerRegistry $doctrine)
+     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_REMEMBERED');
+
+        if ( !empty( trim($request->request->get('comment')) ) )
+        {
+            $comment = new Comment();
+            $comment->setContent($request->request->get('comment'));
+            $comment->setUser($this->getUser());
+            $comment->setVideo($video);
+
+            $em = $doctrine->getManager();
+            $em->persist($comment);
+            $em->flush();
+        }
+
+        return $this->redirectToRoute('video_details', ['video' => $video->getId()]);
+     }
 }

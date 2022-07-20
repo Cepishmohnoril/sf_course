@@ -137,4 +137,16 @@ class Video
 
         return $this;
     }
+
+    public function getVimeoId($user): ?string
+    {
+        if($user)
+        {
+            $path = $this->path;
+        } else {
+            $path = self::VimeoPath.self::videoForNotLoggedIn;
+        }
+
+        return $path;
+    }
 }
