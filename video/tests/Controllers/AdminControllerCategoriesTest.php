@@ -1,40 +1,25 @@
 <?php
+/*
+|--------------------------------------------------------
+| copyright netprogs.pl | available only at Udemy.com | further distribution is prohibited  ***
+|--------------------------------------------------------
+*/
 
 namespace App\Tests;
 
-use App\Entity\Category;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use App\Entity\Category;
+use App\Tests\Rollback;
 
 class AdminControllerCategoriesTest extends WebTestCase
 {
-
-    public function setUp(): void
-    {
-        parent::setUp();
-        $this->client = static::createClient([], [
-            'PHP_AUTH_USER' => 'jw@symf4.loc',
-            'PHP_AUTH_PW' => 'passw',
-        ]);
-        $this->client->disableReboot();
-
-        $this->entityManager = $this->client->getContainer()->get('doctrine.orm.entity_manager');
-        $this->entityManager->getConnection()->beginTransaction();
-        $this->entityManager->getConnection()->setAutoCommit(false);
-    }
-
-    public function tearDown(): void
-    {
-        parent::tearDown();
-        //$this->entityManager->rollback();
-        $this->entityManager->close();
-        $this->entityManager = null; // avoid memory leaks
-    }
+    use Rollback;
 
     public function testTextOnPage()
     {
         $crawler = $this->client->request('GET', '/admin/su/categories');
         $this->assertSame('Categories list', $crawler->filter('h2')->text());
-        $this->assertStringContainsString('Electronics', $this->client->getResponse()->getContent());
+        $this->assertContains('Electronics', $this->client->getResponse()->getContent());
     }
 
     public function testNumberOfItems()
@@ -48,7 +33,7 @@ class AdminControllerCategoriesTest extends WebTestCase
         $crawler = $this->client->request('GET', '/admin/su/categories');
 
         $form = $crawler->selectButton('Add')->form([
-            'category[parent]' => 0,
+            'category[parent]' => 1,
             'category[name]' => 'Other electronics',
         ]);
         $this->client->submit($form);
