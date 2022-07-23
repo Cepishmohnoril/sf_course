@@ -1,8 +1,0 @@
-{
-  "assets/app.css": "/assets/app.css",
-  "assets/app.js": "/assets/app.js",
-  "assets/css/dashboard.css": "/assets/css/dashboard.css",
-  "assets/css/login.css": "/assets/css/login.css",
-  "assets/runtime.js": "/assets/runtime.js",
-  "assets/vendors-node_modules_symfony_stimulus-bridge_dist_index_js-node_modules_core-js_modules_es_ob-7db861.js": "/assets/vendors-node_modules_symfony_stimulus-bridge_dist_index_js-node_modules_core-js_modules_es_ob-7db861.js"
-}
